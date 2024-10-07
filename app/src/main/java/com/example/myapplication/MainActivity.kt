@@ -64,6 +64,22 @@ class MainActivity : ComponentActivity() {
             ) {
                 Text("Leer archivo")
             }
+            Button(
+                onClick = {
+                    var userS = WriteReadUserPass.saveUser(context, "Jose", "Prueba", "usuarios.txt")
+                    Log.i("DAM2", userS)
+                }
+            ) {
+                Text("Registrar Usuario")
+            }
+            Button(
+                onClick = {
+                    var userS = WriteReadUserPass.readUsers(context, "usuarios.txt")
+                    Log.i("DAM2", userS)
+                }
+            ) {
+                Text("Mostrar Usuarios")
+            }
         }
     }
 }
