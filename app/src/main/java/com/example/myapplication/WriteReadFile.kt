@@ -1,32 +1,57 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.os.Environment
-import android.widget.Toast
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
 class WriteReadFile {
-    fun guardarTextoEnArchivo(texto: String, nombreArchivo: String):String {
-        val estadoAlmacenamiento = Environment.getExternalStorageState()
+    companion object {
+        fun guardarTextoEnArchivo(context: Context, texto: String, nombreArchivo: String):String {
+            val estadoAlmacenamiento = Environment.getExternalStorageState()
 
-        if (estadoAlmacenamiento == Environment.MEDIA_MOUNTED) {
-            val directorio = getFilesDir()
-            val archivo = File(directorio, nombreArchivo)
+            if (estadoAlmacenamiento == Environment.MEDIA_MOUNTED) {
+                val directorio = context.filesDir
+                val archivo = File(directorio, nombreArchivo)
 
-            try {
-                val flujoSalida = FileOutputStream(archivo, true)
-                val writer = OutputStreamWriter(flujoSalida)
-                writer.append(texto)
-                writer.close()
+                try {
+                    val flujoSalida = FileOutputStream(archivo, true)
+                    val writer = OutputStreamWriter(flujoSalida)
+                    writer.append(texto)
+                    writer.close()
 
-                return "Texto añadido en $directorio $nombreArchivo"
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return "Error al guardar el archivo"
+                    return "Texto añadido en $directorio $nombreArchivo"
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return "Error al guardar el archivo"
+                }
+            } else {
+                return "No se pudo acceder al almacenamiento externo"
             }
-        } else {
-            return "No se pudo acceder al almacenamiento externo"
+        }
+
+        fun leerTextoDeArchivo(context: Context, nombreArchivo: String): String {
+            val estadoAlmacenamiento = Environment.getExternalStorageState()
+            if (estadoAlmacenamiento == Environment.MEDIA_MOUNTED) {
+                val directorio = context.filesDir
+                val archivo = File(directorio, nombreArchivo)
+                try {
+                    val flujoEntrada = FileInputStream(archivo)
+                    val reader = InputStreamReader(flujoEntrada)
+                    val texto = reader.readText()
+                    reader.close()
+
+                    return "Contenido de $nombreArchivo: $texto"
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return "Error al leer el archivo"
+                }
+            } else {
+                return "No se pudo acceder al almacenamiento externo"
+            }
         }
     }
 }

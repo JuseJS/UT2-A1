@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -16,13 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.time.LocalDateTime
+import com.example.myapplication.WriteReadFile
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +41,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen(nombreArchivo: String) {
         val datetime = LocalDateTime.now().toString()
+        val context = LocalContext.current
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -49,35 +49,21 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = { WriteReadFile.guardarTextoEnArchivo(datetime, nombreArchivo) }
+                onClick = {
+                    var outS = WriteReadFile.guardarTextoEnArchivo(context, datetime, nombreArchivo)
+                    Log.i("DAM2", outS)
+                }
             ) {
                 Text("Guardar archivo")
             }
             Button(
-                onClick = { leerTextoDeArchivo(nombreArchivo) }
+                onClick = {
+                    var inS = WriteReadFile.leerTextoDeArchivo(context, nombreArchivo)
+                    Log.i("DAM2", inS)
+                }
             ) {
                 Text("Leer archivo")
             }
-        }
-    }
-
-    private fun leerTextoDeArchivo(nombreArchivo: String) {
-        val estadoAlmacenamiento = Environment.getExternalStorageState()
-        if (estadoAlmacenamiento == Environment.MEDIA_MOUNTED) {
-            val directorio = getFilesDir()
-            val archivo = File(directorio, nombreArchivo)
-            try {
-                val flujoEntrada = FileInputStream(archivo)
-                val reader = InputStreamReader(flujoEntrada)
-                val texto = reader.readText()
-                reader.close()
-                Log.i("DAM2", "Contenido de $nombreArchivo: $texto")
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("DAM2", "Error al leer el archivo")
-            }
-        } else {
-            Log.e("DAM2", "No se pudo acceder al almacenamiento externo")
         }
     }
 }
